@@ -167,7 +167,7 @@ func exitWith(findings []dynscan.Finding, format string, code int) {
 			os.Exit(code)
 		}
 		fmt.Println("\n" + repeat("=", 80))
-		fmt.Println("🔍 PipeSec Dynamic (Go) - Отчёт")
+		fmt.Println("🔍 PipeSec Dynamic - Отчёт")
 		fmt.Println(repeat("=", 80))
 		fmt.Println("\n📊 Всего найдено проблем:", len(findings))
 		for i, f := range findings {
