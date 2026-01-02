@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pipesec"
+version = "0.1.0"
+description = "PipeSec: hybrid CI/CD workflow security analyzer"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+  "pyyaml>=6.0.3",
+]
+
+[project.scripts]
+pipesec = "static.cli:main"
+
+[dependency-groups]
+dev = [
+  "types-pyyaml>=6.0.12.20250915",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["static*"]
