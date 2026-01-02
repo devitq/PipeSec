@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
 from .registry import register_workflow_rule
-from static.rules.utils import contains_secret_context, get_env, get_uses, is_expression, iter_jobs, iter_steps
+from static.rules.utils import (
+    contains_secret_context,
+    get_env,
+    get_uses,
+    is_expression,
+    iter_jobs,
+    iter_steps,
+)
 from static.secrets import SecretDetectionEngine
 
 
-def _dict_values_strings(d: Dict[str, Any]) -> List[str]:
-    out: List[str] = []
+def _dict_values_strings(d: dict[str, Any]) -> list[str]:
+    out: list[str] = []
     for v in d.values():
         if isinstance(v, str):
             out.append(v)
@@ -22,12 +29,11 @@ def _dict_values_strings(d: Dict[str, Any]) -> List[str]:
 class ThirdPartyActionSecretsRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
-
+    ) -> list[Finding]:
+        out: list[Finding] = []
         for job_name, job_config in iter_jobs(workflow):
             for idx, step in iter_steps(job_config):
                 uses = get_uses(step)
@@ -40,9 +46,16 @@ class ThirdPartyActionSecretsRule(WorkflowRule):
 
                 env_values = list(get_env(step).values())
                 with_cfg = step.get("with", {})
-                with_values: List[str] = _dict_values_strings(with_cfg) if isinstance(with_cfg, dict) else []
+                with_values: list[str] = (
+                    _dict_values_strings(with_cfg) if isinstance(with_cfg, dict) else []
+                )
 
-                passed = [v for v in (env_values + with_values) if isinstance(v, str) and (is_expression(v) or contains_secret_context(v))]
+                passed = [
+                    v
+                    for v in (env_values + with_values)
+                    if isinstance(v, str)
+                    and (is_expression(v) or contains_secret_context(v))
+                ]
                 if not passed:
                     continue
 

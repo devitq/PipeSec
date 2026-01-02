@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
@@ -14,16 +14,15 @@ from static.secrets import SecretDetectionEngine
 class SelfHostedRunnerRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
-
+    ) -> list[Finding]:
+        out: list[Finding] = []
         for job_name, job_config in iter_jobs(workflow):
             runs_on = job_config.get("runs-on")
 
-            labels: List[str] = []
+            labels: list[str] = []
             if isinstance(runs_on, str):
                 labels = [runs_on]
             elif isinstance(runs_on, list):

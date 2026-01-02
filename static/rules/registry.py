@@ -2,17 +2,16 @@ from __future__ import annotations
 
 import importlib
 import pkgutil
-from typing import List, Set, Type
 
 from static.rules.base import WorkflowRule
 
 
-_RULE_TYPES: List[Type[WorkflowRule]] = []
-_RULE_TYPE_NAMES: Set[str] = set()
+_RULE_TYPES: list[type[WorkflowRule]] = []
+_RULE_TYPE_NAMES: set[str] = set()
 _DISCOVERED: bool = False
 
 
-def register_workflow_rule(rule_cls: Type[WorkflowRule]) -> Type[WorkflowRule]:
+def register_workflow_rule(rule_cls: type[WorkflowRule]) -> type[WorkflowRule]:
     name = f"{rule_cls.__module__}.{rule_cls.__name__}"
     if name not in _RULE_TYPE_NAMES:
         _RULE_TYPE_NAMES.add(name)
@@ -40,6 +39,6 @@ def _discover_rule_modules() -> None:
     _DISCOVERED = True
 
 
-def default_workflow_rules() -> List[WorkflowRule]:
+def default_workflow_rules() -> list[WorkflowRule]:
     _discover_rule_modules()
     return [cls() for cls in _RULE_TYPES]

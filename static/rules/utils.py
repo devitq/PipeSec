@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 import re
-from typing import Any, Dict, Iterator, Tuple
+from typing import Any
 
 
-def iter_jobs(workflow: Dict[str, Any]) -> Iterator[Tuple[str, Dict[str, Any]]]:
+def iter_jobs(workflow: dict[str, Any]) -> Iterator[tuple[str, dict[str, Any]]]:
     jobs = workflow.get("jobs", {})
     if not isinstance(jobs, dict):
         return
@@ -13,7 +14,7 @@ def iter_jobs(workflow: Dict[str, Any]) -> Iterator[Tuple[str, Dict[str, Any]]]:
             yield job_name, job_config
 
 
-def iter_steps(job_config: Dict[str, Any]) -> Iterator[Tuple[int, Dict[str, Any]]]:
+def iter_steps(job_config: dict[str, Any]) -> Iterator[tuple[int, dict[str, Any]]]:
     steps = job_config.get("steps", [])
     if not isinstance(steps, list):
         return
@@ -22,26 +23,26 @@ def iter_steps(job_config: Dict[str, Any]) -> Iterator[Tuple[int, Dict[str, Any]
             yield idx, step
 
 
-def get_step_name(step: Dict[str, Any], idx: int) -> str:
+def get_step_name(step: dict[str, Any], idx: int) -> str:
     name = step.get("name")
     return name if isinstance(name, str) and name.strip() else f"step-{idx}"
 
 
-def get_run(step: Dict[str, Any]) -> str | None:
+def get_run(step: dict[str, Any]) -> str | None:
     v = step.get("run")
     return v if isinstance(v, str) else None
 
 
-def get_uses(step: Dict[str, Any]) -> str | None:
+def get_uses(step: dict[str, Any]) -> str | None:
     v = step.get("uses")
     return v if isinstance(v, str) else None
 
 
-def get_env(obj: Dict[str, Any]) -> Dict[str, str]:
+def get_env(obj: dict[str, Any]) -> dict[str, str]:
     env = obj.get("env", {})
     if not isinstance(env, dict):
         return {}
-    out: Dict[str, str] = {}
+    out: dict[str, str] = {}
     for k, v in env.items():
         if isinstance(k, str) and isinstance(v, str):
             out[k] = v

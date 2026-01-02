@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
@@ -15,14 +15,13 @@ from static.secrets import SecretDetectionEngine
 class SecretExposureRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
+    ) -> list[Finding]:
+        out: list[Finding] = []
         for job_name, job_config in iter_jobs(workflow):
             for idx, step in iter_steps(job_config):
-
                 run_command = step.get("run", "")
                 if isinstance(run_command, str) and re.search(
                     r"(echo|print).*(\$\{\{\s*secrets\.|\$\{\{\s*github\.token\s*\}\})",
@@ -41,11 +40,16 @@ class SecretExposureRule(WorkflowRule):
                     )
 
                 uses_value = step.get("uses", "")
-                if isinstance(uses_value, str) and uses_value.startswith("actions/upload-artifact"):
+                if isinstance(uses_value, str) and uses_value.startswith(
+                    "actions/upload-artifact"
+                ):
                     with_config = step.get("with", {})
                     if isinstance(with_config, dict):
                         upload_path = str(with_config.get("path", ""))
-                        if any(k in upload_path.lower() for k in ["env", "secret", ".env", "credential"]):
+                        if any(
+                            k in upload_path.lower()
+                            for k in ["env", "secret", ".env", "credential"]
+                        ):
                             out.append(
                                 Finding(
                                     severity=Severity.HIGH,

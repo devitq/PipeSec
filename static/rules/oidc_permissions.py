@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
@@ -20,12 +20,11 @@ def _check_permissions_obj(permissions: Any) -> bool:
 class OIDCPermissionsRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
-
+    ) -> list[Finding]:
+        out: list[Finding] = []
         if _check_permissions_obj(workflow.get("permissions")):
             out.append(
                 Finding(

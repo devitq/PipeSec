@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
@@ -14,12 +14,11 @@ from static.secrets import SecretDetectionEngine
 class PRTargetUntrustedCheckoutRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
-
+    ) -> list[Finding]:
+        out: list[Finding] = []
         on_triggers = workflow.get("on", {})
         if isinstance(on_triggers, str):
             on_triggers = {on_triggers: {}}
@@ -43,7 +42,11 @@ class PRTargetUntrustedCheckoutRule(WorkflowRule):
                     continue
 
                 lower = ref.lower()
-                if "github.event.pull_request.head" in lower or "github.head_ref" in lower or "pull_request.head" in lower:
+                if (
+                    "github.event.pull_request.head" in lower
+                    or "github.head_ref" in lower
+                    or "pull_request.head" in lower
+                ):
                     out.append(
                         Finding(
                             severity=Severity.CRITICAL,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
@@ -15,12 +15,11 @@ from static.secrets import SecretDetectionEngine
 class DebugTracingRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
-
+    ) -> list[Finding]:
+        out: list[Finding] = []
         wf_env = get_env(workflow)
         for key in ("ACTIONS_STEP_DEBUG", "ACTIONS_RUNNER_DEBUG"):
             v = wf_env.get(key)
@@ -41,7 +40,12 @@ class DebugTracingRule(WorkflowRule):
             job_env = get_env(job_config)
             for key in ("ACTIONS_STEP_DEBUG", "ACTIONS_RUNNER_DEBUG"):
                 v = job_env.get(key)
-                if isinstance(v, str) and v.strip().lower() in {"1", "true", "yes", "on"}:
+                if isinstance(v, str) and v.strip().lower() in {
+                    "1",
+                    "true",
+                    "yes",
+                    "on",
+                }:
                     out.append(
                         Finding(
                             severity=Severity.MEDIUM,
@@ -59,7 +63,9 @@ class DebugTracingRule(WorkflowRule):
                 if not isinstance(run, str):
                     continue
 
-                if re.search(r"(?m)^\s*set\s+-x\b", run) or re.search(r"\b(bash|sh)\s+-x\b", run):
+                if re.search(r"(?m)^\s*set\s+-x\b", run) or re.search(
+                    r"\b(bash|sh)\s+-x\b", run
+                ):
                     step_name = get_step_name(step, idx)
                     out.append(
                         Finding(

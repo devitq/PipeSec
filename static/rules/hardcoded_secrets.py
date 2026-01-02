@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import yaml  # type: ignore[import-untyped]
 
@@ -15,11 +15,11 @@ from static.secrets import SecretDetectionEngine
 class HardcodedSecretsRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
+    ) -> list[Finding]:
+        out: list[Finding] = []
         yaml_str = yaml.dump(workflow, sort_keys=False)
         for secret in secret_engine.detect_in_text(yaml_str):
             if "${{" in secret.value or "secrets." in secret.value:
@@ -31,7 +31,9 @@ class HardcodedSecretsRule(WorkflowRule):
                     description=f"Обнаружен hardcoded секрет типа '{secret.secret_type}'.",
                     location=str(path),
                     recommendation="Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
-                    evidence=(secret.value[:20] + "...") if len(secret.value) > 20 else secret.value,
+                    evidence=(secret.value[:20] + "...")
+                    if len(secret.value) > 20
+                    else secret.value,
                 )
             )
         return out

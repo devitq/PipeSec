@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
 from .registry import register_workflow_rule
-from static.rules.utils import contains_secret_context, get_env, is_expression, iter_jobs, iter_steps
+from static.rules.utils import (
+    contains_secret_context,
+    get_env,
+    is_expression,
+    iter_jobs,
+    iter_steps,
+)
 from static.secrets import SecretDetectionEngine
 
 
@@ -14,13 +20,13 @@ from static.secrets import SecretDetectionEngine
 class SuspiciousEnvRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
+    ) -> list[Finding]:
+        out: list[Finding] = []
 
-        def check_env(env: Dict[str, str], location: str) -> None:
+        def check_env(env: dict[str, str], location: str) -> None:
             for k, v in env.items():
                 if not secret_engine.is_suspicious_env_name(k):
                     continue

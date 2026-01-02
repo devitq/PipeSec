@@ -30,14 +30,18 @@ class StaticGithubActionsAnalyzer:
     def _rule_fqn(rule: object) -> str:
         module = getattr(rule.__class__, "__module__", "")
         name = getattr(rule.__class__, "__name__", "")
-        if not isinstance(module, str) or not isinstance(name, str) or not module or not name:
+        if (
+            not isinstance(module, str)
+            or not isinstance(name, str)
+            or not module
+            or not name
+        ):
             return ""
         return f"{module}.{name}"
 
     def _is_rule_enabled(self, rule: object) -> bool:
         rule_id = self._rule_id(rule)
         rule_fqn = self._rule_fqn(rule)
-        print(f"Checking rule: id='{rule_id}', fqn='{rule_fqn}'")
 
         if self.enabled_rules is not None and len(self.enabled_rules) > 0:
             if rule_id not in self.enabled_rules and rule_fqn not in self.enabled_rules:
@@ -91,6 +95,8 @@ class StaticGithubActionsAnalyzer:
 
         for rule in default_workflow_rules():
             if self._is_rule_enabled(rule):
-                findings.extend(rule.evaluate(workflow, workflow_path, self.secret_engine))
+                findings.extend(
+                    rule.evaluate(workflow, workflow_path, self.secret_engine)
+                )
 
         return findings

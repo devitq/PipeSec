@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding
 
 
-def to_json_dict(findings: List[Finding]) -> Dict[str, Any]:
+def to_json_dict(findings: list[Finding]) -> dict[str, Any]:
     return {
         "findings": [asdict(f) for f in findings],
         "count": len(findings),
@@ -18,5 +18,5 @@ def to_json_dict(findings: List[Finding]) -> Dict[str, Any]:
     }
 
 
-def render_json(findings: List[Finding], *, indent: int = 2) -> str:
+def render_json(findings: list[Finding], *, indent: int = 2) -> str:
     return json.dumps(to_json_dict(findings), ensure_ascii=False, indent=indent)

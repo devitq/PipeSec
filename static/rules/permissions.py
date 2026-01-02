@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
@@ -13,11 +13,11 @@ from static.secrets import SecretDetectionEngine
 class ExcessivePermissionsRule(WorkflowRule):
     def evaluate(
         self,
-        workflow: Dict[str, Any],
+        workflow: dict[str, Any],
         path: Path,
         secret_engine: SecretDetectionEngine,
-    ) -> List[Finding]:
-        out: List[Finding] = []
+    ) -> list[Finding]:
+        out: list[Finding] = []
         permissions = workflow.get("permissions")
         if permissions is None:
             out.append(
@@ -46,7 +46,14 @@ class ExcessivePermissionsRule(WorkflowRule):
             )
 
         if isinstance(permissions, dict):
-            risky = {"contents", "packages", "actions", "pull-requests", "issues", "deployments"}
+            risky = {
+                "contents",
+                "packages",
+                "actions",
+                "pull-requests",
+                "issues",
+                "deployments",
+            }
             for k, v in permissions.items():
                 if not isinstance(k, str) or not isinstance(v, str):
                     continue

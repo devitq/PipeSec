@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import List, Optional
 
 from static.analyzers.logs import LogAnalyzer
 from static.analyzers.static_github_actions import StaticGithubActionsAnalyzer
@@ -17,13 +16,15 @@ def _read_text_file(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="pipesec",
         description="PipeSec: гибридный анализатор безопасности CI/CD workflow",
     )
 
-    parser.add_argument("workflow", type=Path, nargs="?", help="Путь к workflow YAML (GitHub Actions)")
+    parser.add_argument(
+        "workflow", type=Path, nargs="?", help="Путь к workflow YAML (GitHub Actions)"
+    )
     parser.add_argument(
         "--log",
         dest="log_path",
@@ -97,7 +98,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f" - id: {rule_id}, fqdn: {rule_fqn}")
         return 0
 
-    findings: List[Finding] = []
+    findings: list[Finding] = []
 
     if not args.workflow.exists():
         findings.append(
@@ -111,8 +112,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
     else:
         secret_engine = SecretDetectionEngine(patterns_path=args.patterns_path)
-        enabled = {r.strip() for r in args.enable_rules if isinstance(r, str) and r.strip()}
-        disabled = {r.strip() for r in args.disable_rules if isinstance(r, str) and r.strip()}
+        enabled = {
+            r.strip() for r in args.enable_rules if isinstance(r, str) and r.strip()
+        }
+        disabled = {
+            r.strip() for r in args.disable_rules if isinstance(r, str) and r.strip()
+        }
         static_analyzer = StaticGithubActionsAnalyzer(
             secret_engine,
             enabled_rules=enabled if enabled else None,
@@ -123,7 +128,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         if args.log_path is not None:
             if args.log_path.exists():
                 log_analyzer = LogAnalyzer(secret_engine)
-                findings.extend(log_analyzer.analyze_text(_read_text_file(args.log_path), str(args.log_path)))
+                findings.extend(
+                    log_analyzer.analyze_text(
+                        _read_text_file(args.log_path), str(args.log_path)
+                    )
+                )
             else:
                 findings.append(
                     Finding(

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
 
 
 @dataclass(frozen=True)
@@ -14,12 +14,7 @@ class SecretMatch:
 
 
 class SecretDetectionEngine:
-    """Pattern-based secret detection.
-
-    Note: This is heuristic and can yield false positives/negatives.
-    """
-
-    DEFAULT_PATTERNS: Dict[str, str] = {
+    DEFAULT_PATTERNS: dict[str, str] = {
         "GitHub Token (classic)": r"gh[pousr]_[A-Za-z0-9_]{36,255}",
         "GitHub Token (fine-grained)": r"github_pat_[A-Za-z0-9_]{80,255}",
         "GitLab Personal Access Token": r"glpat-[A-Za-z0-9_\-]{20,}",
@@ -44,8 +39,8 @@ class SecretDetectionEngine:
         "AUTH",
     ]
 
-    def __init__(self, *, patterns_path: Optional[Path] = None):
-        self._patterns: Dict[str, str] = dict(self.DEFAULT_PATTERNS)
+    def __init__(self, *, patterns_path: Path | None = None):
+        self._patterns: dict[str, str] = dict(self.DEFAULT_PATTERNS)
 
         resolved = self._resolve_patterns_path(patterns_path)
         if resolved is not None:
@@ -53,15 +48,17 @@ class SecretDetectionEngine:
             if loaded:
                 self._patterns = loaded
 
-    def detect_in_text(self, text: str) -> List[SecretMatch]:
-        matches: List[SecretMatch] = []
+    def detect_in_text(self, text: str) -> list[SecretMatch]:
+        matches: list[SecretMatch] = []
         for secret_type, pattern in self._patterns.items():
             for match in re.finditer(pattern, text):
-                matches.append(SecretMatch(secret_type=secret_type, value=match.group(0)))
+                matches.append(
+                    SecretMatch(secret_type=secret_type, value=match.group(0))
+                )
         return matches
 
     @staticmethod
-    def _resolve_patterns_path(patterns_path: Optional[Path]) -> Optional[Path]:
+    def _resolve_patterns_path(patterns_path: Path | None) -> Path | None:
         if patterns_path is not None:
             return patterns_path
 
@@ -72,7 +69,7 @@ class SecretDetectionEngine:
         return None
 
     @staticmethod
-    def _load_patterns_json(path: Path) -> Dict[str, str]:
+    def _load_patterns_json(path: Path) -> dict[str, str]:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
@@ -97,8 +94,8 @@ class SecretDetectionEngine:
         upper = name.upper()
         return any(s in upper for s in self.SUSPICIOUS_ENV_NAME_SUBSTRINGS)
 
-    def iter_suspicious_env_names(self, env: Iterable[str]) -> List[str]:
-        out: List[str] = []
+    def iter_suspicious_env_names(self, env: Iterable[str]) -> list[str]:
+        out: list[str] = []
         for entry in env:
             if "=" not in entry:
                 continue
