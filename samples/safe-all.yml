@@ -1,0 +1,45 @@
+name: Safe (designed to trigger zero rules)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+# Explicit least-privilege permissions (avoids "missing permissions" warning)
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Pinned to commit SHA (40 hex)
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: false
+
+      - name: Build
+        run: |
+          echo "Building project"
+          npm ci
+          npm test
+          npm run build
+
+      # No curl|bash, no set -x, no echo secrets, no suspicious env literals
+      - name: Deploy (no secrets in logs)
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "Deploy step running"
+          ./scripts/deploy.sh
+
+      # Artifact paths do not include env/secret/credential substrings
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@5d5d22d10b44f64d7f68cf9e97b8c0a0c5c9c2aa
+        with:
+          name: build-output
+          path: |
+            dist/

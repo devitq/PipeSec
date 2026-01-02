@@ -1,0 +1,91 @@
+name: Vulnerable (triggers all rules)
+
+# Triggers: DangerousTriggersRule + UntrustedCodeOnPRTargetRule
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+  push:
+    branches: [main]
+
+# Triggers: ExcessivePermissionsRule (write-all)
+permissions: write-all
+
+# Triggers: DebugTracingRule (ACTIONS_*_DEBUG)
+env:
+  ACTIONS_STEP_DEBUG: "true"
+
+jobs:
+  build:
+    # Triggers: SelfHostedRunnerRule
+    runs-on: [self-hosted, linux]
+
+    # Triggers: OIDCPermissionsRule (job-level)
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Triggers: UnpinnedActionsRule (tag, not SHA)
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Triggers: PRTargetUntrustedCheckoutRule
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Triggers: CheckoutCredentialPersistenceRule (explicit true)
+          persist-credentials: "true"
+
+      # Triggers: DebugTracingRule (set -x)
+      - name: Enable tracing
+        run: |
+          set -x
+          echo "Tracing enabled"
+
+      # Triggers: SecretExposureRule (echo secrets.* and github.token)
+      - name: Leak secrets to logs
+        run: |
+          echo "Deploy token: ${{ secrets.DEPLOY_TOKEN }}"
+          echo "GITHUB_TOKEN: ${{ github.token }}"
+
+      # Triggers: HardcodedSecretsRule + SuspiciousEnvRule (literal suspicious env var)
+      - name: Configure env (hardcoded secrets)
+        env:
+          AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+          AWS_SECRET_ACCESS_KEY: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+          STRIPE_SECRET_KEY: "sk_live_1234567890abcdef12345678"
+          SENDGRID_API_KEY: "SG.AbCdEfGhIjKlMnOpQrStUv.XYZ0123456789abcdefghijklmnopqrstuvwxyzABCDE"
+          TELEGRAM_BOT_TOKEN: "123456789:AAEAAAEAAAEAAAEAAAEAAAEAAAEAAAEAAAE"
+          DEPLOY_PASSWORD: "SuperSecretPassword123456"
+        run: |
+          echo "Configured"
+
+      # Triggers: InsecureDownloadsRule (curl|bash)
+      - name: Install tool unsafely
+        run: |
+          curl -fsSL https://example.com/install.sh | bash
+
+      # Triggers: DockerImagePinningRule
+      - name: Run docker action (unpinned image)
+        uses: docker://alpine:latest
+
+      # Triggers: ThirdPartyActionSecretsRule
+      - name: Use third-party action with secrets
+        uses: somecorp/someaction@v1
+        env:
+          THIRD_PARTY_TOKEN: ${{ secrets.API_KEY }}
+
+      # Triggers: SecretExposureRule (artifact path includes .env/secret)
+      - name: Upload artifacts (includes secrets)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            dist/
+            .env
+            config/secrets.json
+            credentials.txt
+
+      # Triggers: UntrustedCodeOnPRTargetRule (local script exec)
+      - name: Run untrusted local script
+        run: |
+          chmod +x ./scripts/user-provided.sh
+          ./scripts/user-provided.sh
