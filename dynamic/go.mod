@@ -1,3 +1,3 @@
-module github.com/devitq/PipeSec/dynamic
+module github.com/yetanotherparticipant/PipeSec/dynamic
 
 go 1.25
