@@ -25,6 +25,8 @@ pip install "git+https://github.com/yetanotherparticipant/PipeSec.git#subdirecto
 ### Динамический модуль
 
 ```
+# собраный бинарник появится в $(go env GOPATH)/bin/pipesec-dynamic
+# не забудьте добавить $(go env GOPATH)/bin в PATH
 GOPROXY=direct go install github.com/yetanotherparticipant/PipeSec/dynamic/cmd/pipesec-dynamic@latest
 ```
 
@@ -37,7 +39,7 @@ GOPROXY=direct go install github.com/yetanotherparticipant/PipeSec/dynamic/cmd/p
 **Статический анализ:**
 
 ```bash
-# через CLI entrypoint (после pip install -e .):
+# через CLI entrypoint:
 pipesec <путь к workflow.yml>
 
 # или запуск как модуль:
@@ -65,7 +67,7 @@ pipesec samples/vulnerable-all.yml --format json --out out.json
 По умолчанию инструмент использует [data/secret_patterns.json](data/secret_patterns.json), если файл существует.
 
 ```bash
-# явное указание файла паттернов
+# явное указание файла паттернов (по дефолту берётся либо data/secret_patterns.json либо ../data/secret_patterns.json)
 pipesec samples/vulnerable-all.yml --patterns data/secret_patterns.json
 ```
 
@@ -120,10 +122,10 @@ options:
 
 ```bash
 # сканирование файла лога
-pipesec-dynamic -mode scan --log ../samples/build-all.log -source build-all.log
+pipesec-dynamic -mode scan --log ./samples/build-all.log -source build-all.log
 
 # сканирование stdin
-cat ../samples/build-all.log | pipesec-dynamic -mode scan -source stdin
+cat ./samples/build-all.log | pipesec-dynamic -mode scan -source stdin
 ```
 
 **Запуск стороннего кода (run):**
@@ -140,7 +142,7 @@ pipesec-dynamic -mode run -source runtime -- curl https://example.com
 
 ```bash
 # JSON
-pipesec-dynamic -mode scan --log ../samples/build-all.log -source build-all.log -format json
+pipesec-dynamic -mode scan --log ./samples/build-all.log -source build-all.log -format json
 ```
 
 **Паттерны секретов (единый источник):**
@@ -149,7 +151,7 @@ pipesec-dynamic -mode scan --log ../samples/build-all.log -source build-all.log 
 Можно явно указать файл через `--patterns`.
 
 ```bash
-pipesec-dynamic -mode scan --patterns ../data/secret_patterns.json --log ../samples/build-all.log -source build-all.log
+pipesec-dynamic -mode scan --patterns ./data/secret_patterns.json --log ./samples/build-all.log -source build-all.log
 ```
 
 **Справка:**
@@ -200,7 +202,7 @@ pipesec samples/safe-all.yml
 **Динамический анализ (scan) лога с утечками:**
 
 ```bash
-./bin/pipesec-dynamic -mode scan -format json --log ../samples/build-all.log -source build-all.log
+pipesec-dynamic -mode scan -format json --log ./samples/build-all.log -source build-all.log
 ```
 
 Ожидаемый результат: CRITICAL-находки по секретам из лога, exit code = 1.
