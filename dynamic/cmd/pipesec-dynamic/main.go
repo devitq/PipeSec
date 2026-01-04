@@ -10,7 +10,7 @@ import (
 	"os/exec"
 	"time"
 
-	"pipesec-dyn/internal/dynscan"
+	"github.com/devitq/PipeSec/dynamic/internal/dynscan"
 )
 
 func main() {
