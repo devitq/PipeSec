@@ -21,7 +21,9 @@ class InsecureDownloadsRule(WorkflowRule):
     ) -> list[Finding]:
         out: list[Finding] = []
 
-        pipe_exec = re.compile(r"(?i)\b(curl|wget)\b[^\n]*\|\s*(bash|sh|zsh|python|python3)\b")
+        pipe_exec = re.compile(
+            r"(?i)\b(curl|wget)\b[^\n]*\|\s*(bash|sh|zsh|python|python3)\b"
+        )
 
         for job_name, job_config in iter_jobs(workflow):
             for idx, step in iter_steps(job_config):

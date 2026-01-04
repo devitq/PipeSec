@@ -8,7 +8,9 @@ class LogAnalyzer:
     def __init__(self, secret_engine: SecretDetectionEngine):
         self.secret_engine = secret_engine
 
-    def analyze_text(self, log_content: str, log_source: str = "workflow.log") -> list[Finding]:
+    def analyze_text(
+        self, log_content: str, log_source: str = "workflow.log"
+    ) -> list[Finding]:
         findings: list[Finding] = []
 
         matches = self.secret_engine.detect_in_text(log_content)
@@ -28,9 +30,13 @@ class LogAnalyzer:
                     severity=Severity.CRITICAL,
                     category="Secret in Logs",
                     description=f"Обнаружен секрет типа '{secret.secret_type}' в логах выполнения.",
-                    location=f"{log_source}:line {line_num}" if line_num else log_source,
+                    location=f"{log_source}:line {line_num}"
+                    if line_num
+                    else log_source,
                     recommendation="Секрет попал в лог: срочно ротируйте секрет и исправьте шаг, который его печатает.",
-                    evidence=(secret.value[:20] + "...") if len(secret.value) > 20 else secret.value,
+                    evidence=(secret.value[:20] + "...")
+                    if len(secret.value) > 20
+                    else secret.value,
                 )
             )
 

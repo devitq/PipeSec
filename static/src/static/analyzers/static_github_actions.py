@@ -95,6 +95,8 @@ class StaticGithubActionsAnalyzer:
 
         for rule in default_workflow_rules():
             if self._is_rule_enabled(rule):
-                findings.extend(rule.evaluate(workflow, workflow_path, self.secret_engine))
+                findings.extend(
+                    rule.evaluate(workflow, workflow_path, self.secret_engine)
+                )
 
         return findings

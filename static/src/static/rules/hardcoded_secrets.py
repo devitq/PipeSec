@@ -31,7 +31,9 @@ class HardcodedSecretsRule(WorkflowRule):
                     description=f"Обнаружен hardcoded секрет типа '{secret.secret_type}'.",
                     location=str(path),
                     recommendation="Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
-                    evidence=(secret.value[:20] + "...") if len(secret.value) > 20 else secret.value,
+                    evidence=(secret.value[:20] + "...")
+                    if len(secret.value) > 20
+                    else secret.value,
                 )
             )
         return out

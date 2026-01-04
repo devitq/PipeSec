@@ -52,7 +52,9 @@ class SecretDetectionEngine:
         matches: list[SecretMatch] = []
         for secret_type, pattern in self._patterns.items():
             for match in re.finditer(pattern, text):
-                matches.append(SecretMatch(secret_type=secret_type, value=match.group(0)))
+                matches.append(
+                    SecretMatch(secret_type=secret_type, value=match.group(0))
+                )
         return matches
 
     @staticmethod

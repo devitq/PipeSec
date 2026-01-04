@@ -46,7 +46,14 @@ class ExcessivePermissionsRule(WorkflowRule):
             )
 
         if isinstance(permissions, dict):
-            risky = {"contents", "packages", "actions", "pull-requests", "issues", "deployments"}
+            risky = {
+                "contents",
+                "packages",
+                "actions",
+                "pull-requests",
+                "issues",
+                "deployments",
+            }
             for k, v in permissions.items():
                 if not isinstance(k, str) or not isinstance(v, str):
                     continue
