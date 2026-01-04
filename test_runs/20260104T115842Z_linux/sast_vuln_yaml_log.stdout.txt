@@ -1,0 +1,227 @@
+{
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "category": "Checkout Hardening",
+      "description": "actions/checkout выполняется с persist-credentials=true (явно или по умолчанию). Это оставляет токен в git-конфиге и увеличивает риск злоупотребления при выполнении стороннего кода.",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[0]",
+      "recommendation": "Установите `with: persist-credentials: false` для actions/checkout, если push не требуется. Также минимизируйте permissions для GITHUB_TOKEN.",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Logging",
+      "description": "Включён режим отладки через env 'ACTIONS_STEP_DEBUG=true'.",
+      "location": "/home/admin/samples/vulnerable-all.yml:env.ACTIONS_STEP_DEBUG",
+      "recommendation": "Отключайте debug-логирование в production CI, чтобы снизить риск утечки чувствительных данных в логи.",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Logging",
+      "description": "В шаге 'Enable tracing' включён shell tracing (set -x / bash -x).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[1]",
+      "recommendation": "Не используйте set -x / bash -x в CI с секретами: команды и значения переменных могут попасть в логи.",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Supply Chain",
+      "description": "Используется docker image без pin на digest (или с latest).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[5].uses",
+      "recommendation": "Закрепляйте docker image по digest (docker://image@sha256:...) или используйте фиксированный тег. Это снижает риск supply-chain подмены.",
+      "evidence": "docker://alpine:latest"
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Hardcoded Secret",
+      "description": "Обнаружен hardcoded секрет типа 'AWS Access Key'.",
+      "location": "/home/admin/samples/vulnerable-all.yml",
+      "recommendation": "Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "AKIAIOSFODNN7EXAMPLE"
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Hardcoded Secret",
+      "description": "Обнаружен hardcoded секрет типа 'SendGrid API Key'.",
+      "location": "/home/admin/samples/vulnerable-all.yml",
+      "recommendation": "Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "SG.AbCdEfGhIjKlMnOpQ..."
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Hardcoded Secret",
+      "description": "Обнаружен hardcoded секрет типа 'Stripe Secret Key'.",
+      "location": "/home/admin/samples/vulnerable-all.yml",
+      "recommendation": "Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "sk_live_1234567890ab..."
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Hardcoded Secret",
+      "description": "Обнаружен hardcoded секрет типа 'Telegram Bot Token'.",
+      "location": "/home/admin/samples/vulnerable-all.yml",
+      "recommendation": "Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "123456789:AAEAAAEAAA..."
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Hardcoded Secret",
+      "description": "Обнаружен hardcoded секрет типа 'Generic Secret'.",
+      "location": "/home/admin/samples/vulnerable-all.yml",
+      "recommendation": "Перенесите секрет в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "PASSWORD: SuperSecre..."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Supply Chain",
+      "description": "В шаге 'Install tool unsafely' обнаружен потенциально небезопасный паттерн загрузки и выполнения: curl/wget | shell.",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[4]",
+      "recommendation": "Избегайте curl|bash. Загружайте артефакт по HTTPS, проверяйте checksum/подпись и выполняйте локально. Предпочитайте фиксированные версии и проверенные источники.",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Permissions",
+      "description": "Job 'build' запрашивает 'id-token: write' (OIDC).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.permissions.id-token",
+      "recommendation": "Запрашивайте OIDC токен только в job, который его использует, и только на время необходимости.",
+      "evidence": ""
+    },
+    {
+      "severity": "HIGH",
+      "category": "Excessive Permissions",
+      "description": "Workflow имеет 'write-all' permissions.",
+      "location": "/home/admin/samples/vulnerable-all.yml:permissions",
+      "recommendation": "Используйте принцип наименьших привилегий: перечислите только необходимые permissions.",
+      "evidence": ""
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Secret Exposure",
+      "description": "Секрет может быть выведен в логи через echo/print в шаге 'Leak secrets to logs'.",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[2]",
+      "recommendation": "Не выводите secrets/token в stdout. Если нужно отладить — используйте маскирование и redaction.",
+      "evidence": ""
+    },
+    {
+      "severity": "HIGH",
+      "category": "Artifact Exposure",
+      "description": "Артефакт может содержать секреты: 'dist/\n.env\nconfig/secrets.json\ncredentials.txt\n'.",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[7]",
+      "recommendation": "Исключите .env/credentials/secrets из артефактов (artifact exclude / отдельные пути).",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Runner",
+      "description": "Job 'build' использует self-hosted runner.",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.runs-on",
+      "recommendation": "Self-hosted runners повышают риск (персистентное окружение, возможные остатки секретов/артефактов). Рекомендуется усилить hardening, изоляцию, очистку workspace, контроль egress и минимизировать permissions.",
+      "evidence": ""
+    },
+    {
+      "severity": "HIGH",
+      "category": "Hardcoded Secret",
+      "description": "Подозрительная переменная окружения 'AWS_ACCESS_KEY_ID' имеет литеральное значение (возможный hardcoded секрет).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[3].env",
+      "recommendation": "Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "AKIAIOSFODNN7EXAMPLE"
+    },
+    {
+      "severity": "HIGH",
+      "category": "Hardcoded Secret",
+      "description": "Подозрительная переменная окружения 'AWS_SECRET_ACCESS_KEY' имеет литеральное значение (возможный hardcoded секрет).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[3].env",
+      "recommendation": "Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "wJalrXUtnFEMI/K7MDEN..."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Hardcoded Secret",
+      "description": "Подозрительная переменная окружения 'STRIPE_SECRET_KEY' имеет литеральное значение (возможный hardcoded секрет).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[3].env",
+      "recommendation": "Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "sk_live_1234567890ab..."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Hardcoded Secret",
+      "description": "Подозрительная переменная окружения 'SENDGRID_API_KEY' имеет литеральное значение (возможный hardcoded секрет).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[3].env",
+      "recommendation": "Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "SG.AbCdEfGhIjKlMnOpQ..."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Hardcoded Secret",
+      "description": "Подозрительная переменная окружения 'TELEGRAM_BOT_TOKEN' имеет литеральное значение (возможный hardcoded секрет).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[3].env",
+      "recommendation": "Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "123456789:AAEAAAEAAA..."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Hardcoded Secret",
+      "description": "Подозрительная переменная окружения 'DEPLOY_PASSWORD' имеет литеральное значение (возможный hardcoded секрет).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[3].env",
+      "recommendation": "Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
+      "evidence": "SuperSecretPassword1..."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Third-Party Action",
+      "description": "Секреты/токены передаются в сторонний GitHub Action.",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[6]",
+      "recommendation": "Минимизируйте передачу secrets в сторонние actions. Предпочитайте официальные actions, проверяйте репутацию/подпись, закрепляйте по SHA и используйте отдельный токен с минимальными правами.",
+      "evidence": "somecorp/someaction@v1"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Unpinned Action",
+      "description": "Action 'actions/checkout@v4' не закреплён на commit SHA (используется тег/ветка).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[0].uses",
+      "recommendation": "Для снижения supply-chain рисков закрепляйте actions по SHA (например actions/checkout@<sha>).",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Unpinned Action",
+      "description": "Action 'somecorp/someaction@v1' не закреплён на commit SHA (используется тег/ветка).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[6].uses",
+      "recommendation": "Для снижения supply-chain рисков закрепляйте actions по SHA (например actions/checkout@<sha>).",
+      "evidence": ""
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Unpinned Action",
+      "description": "Action 'actions/upload-artifact@v4' не закреплён на commit SHA (используется тег/ветка).",
+      "location": "/home/admin/samples/vulnerable-all.yml:jobs.build.steps[7].uses",
+      "recommendation": "Для снижения supply-chain рисков закрепляйте actions по SHA (например actions/checkout@<sha>).",
+      "evidence": ""
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Secret in Logs",
+      "description": "Обнаружен секрет типа 'AWS Access Key' в логах выполнения.",
+      "location": "/home/admin/test_runs/20260104T115842Z_linux/leaky-build.log:line 2",
+      "recommendation": "Секрет попал в лог: срочно ротируйте секрет и исправьте шаг, который его печатает.",
+      "evidence": "AKIA1234567890ABCD12"
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "Secret in Logs",
+      "description": "Обнаружен секрет типа 'Stripe Secret Key' в логах выполнения.",
+      "location": "/home/admin/test_runs/20260104T115842Z_linux/leaky-build.log:line 3",
+      "recommendation": "Секрет попал в лог: срочно ротируйте секрет и исправьте шаг, который его печатает.",
+      "evidence": "sk_live_51Hxxxxxxxxx..."
+    }
+  ],
+  "count": 27,
+  "countsBySeverity": {
+    "CRITICAL": 8,
+    "HIGH": 10,
+    "MEDIUM": 9,
+    "LOW": 0
+  }
+}

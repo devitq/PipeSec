@@ -1,0 +1,1 @@
+"/home/admin/static/.venv/bin/pipesec" --patterns "/home/admin/data/secret_patterns.json" --format json "/home/admin/samples/safe-all.yml"

@@ -1,0 +1,7 @@
+timestamp_utc=20260104T115842Z
+uname=Linux debian 6.17.8-orbstack-00308-g8f9c941121b1 #1 SMP PREEMPT Thu Nov 20 09:34:02 UTC 2025 aarch64 GNU/Linux
+whoami=admin
+pwd=/home/admin
+static_bin=/home/admin/static/.venv/bin/pipesec
+dynamic_bin=/home/admin/pipesec-dynamic
+patterns=/home/admin/data/secret_patterns.json

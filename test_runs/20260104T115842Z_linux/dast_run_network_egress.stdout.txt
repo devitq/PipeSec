@@ -1,0 +1,13 @@
+{
+  "count": 1,
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "category": "Network Egress (Observed)",
+      "description": "Обнаружено новое исходящее сетевое соединение во время выполнения команды.",
+      "location": "stdin",
+      "recommendation": "Проверьте необходимость сетевого доступа; для CI лучше ограничивать egress и/или фиксировать allowlist доменов.",
+      "evidence": "104.18.26.120:443"
+    }
+  ]
+}

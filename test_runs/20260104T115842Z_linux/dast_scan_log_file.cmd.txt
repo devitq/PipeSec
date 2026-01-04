@@ -1,0 +1,1 @@
+"/home/admin/pipesec-dynamic" -mode scan --patterns "/home/admin/data/secret_patterns.json" --format json --log "/home/admin/test_runs/20260104T115842Z_linux/leaky-build.log"

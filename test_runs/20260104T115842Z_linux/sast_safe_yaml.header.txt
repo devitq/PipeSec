@@ -1,0 +1,1 @@
+=== sast_safe_yaml ===

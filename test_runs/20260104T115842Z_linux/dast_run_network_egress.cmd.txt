@@ -1,0 +1,1 @@
+"/home/admin/pipesec-dynamic" -mode run --patterns "/home/admin/data/secret_patterns.json" --format json -- python3 -c 'import socket,time; s=socket.create_connection(("example.com",443),timeout=5); time.sleep(5); s.close()'
