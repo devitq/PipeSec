@@ -38,7 +38,9 @@ class SuspiciousEnvRule(WorkflowRule):
                     Finding(
                         severity=Severity.HIGH,
                         category="Hardcoded Secret",
-                        description=f"Подозрительная переменная окружения '{k}' имеет литеральное значение (возможный hardcoded секрет).",
+                        description=(
+                            f"Подозрительная переменная окружения '{k}' имеет литеральное значение (возможный hardcoded секрет)."
+                        ),
                         location=location,
                         recommendation="Перенесите значение в GitHub Secrets/Variables и подставляйте через ${{ secrets.NAME }}.",
                         evidence=(v[:20] + "...") if len(v) > 20 else v,

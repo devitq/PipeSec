@@ -46,15 +46,12 @@ class ThirdPartyActionSecretsRule(WorkflowRule):
 
                 env_values = list(get_env(step).values())
                 with_cfg = step.get("with", {})
-                with_values: list[str] = (
-                    _dict_values_strings(with_cfg) if isinstance(with_cfg, dict) else []
-                )
+                with_values: list[str] = _dict_values_strings(with_cfg) if isinstance(with_cfg, dict) else []
 
                 passed = [
                     v
                     for v in (env_values + with_values)
-                    if isinstance(v, str)
-                    and (is_expression(v) or contains_secret_context(v))
+                    if isinstance(v, str) and (is_expression(v) or contains_secret_context(v))
                 ]
                 if not passed:
                     continue

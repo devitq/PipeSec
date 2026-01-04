@@ -6,13 +6,7 @@ from typing import Any
 from static.models import Finding, Severity
 from static.rules.base import WorkflowRule
 from .registry import register_workflow_rule
-from static.rules.utils import (
-    get_run,
-    get_step_name,
-    iter_jobs,
-    iter_steps,
-    run_has_local_exec,
-)
+from static.rules.utils import get_run, get_step_name, iter_jobs, iter_steps, run_has_local_exec
 from static.secrets import SecretDetectionEngine
 
 

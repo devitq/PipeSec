@@ -40,16 +40,11 @@ class SecretExposureRule(WorkflowRule):
                     )
 
                 uses_value = step.get("uses", "")
-                if isinstance(uses_value, str) and uses_value.startswith(
-                    "actions/upload-artifact"
-                ):
+                if isinstance(uses_value, str) and uses_value.startswith("actions/upload-artifact"):
                     with_config = step.get("with", {})
                     if isinstance(with_config, dict):
                         upload_path = str(with_config.get("path", ""))
-                        if any(
-                            k in upload_path.lower()
-                            for k in ["env", "secret", ".env", "credential"]
-                        ):
+                        if any(k in upload_path.lower() for k in ["env", "secret", ".env", "credential"]):
                             out.append(
                                 Finding(
                                     severity=Severity.HIGH,

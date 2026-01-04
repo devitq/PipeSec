@@ -24,7 +24,7 @@ def _discover_rule_modules() -> None:
     if _DISCOVERED:
         return
 
-    pkg = importlib.import_module(__name__.rsplit(".", 1)[0])  # pipesec.rules
+    pkg = importlib.import_module(__name__.rsplit(".", 1)[0])  # static.rules
     pkg_path = getattr(pkg, "__path__", None)
     if pkg_path is None:
         _DISCOVERED = True

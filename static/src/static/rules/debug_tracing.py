@@ -40,12 +40,7 @@ class DebugTracingRule(WorkflowRule):
             job_env = get_env(job_config)
             for key in ("ACTIONS_STEP_DEBUG", "ACTIONS_RUNNER_DEBUG"):
                 v = job_env.get(key)
-                if isinstance(v, str) and v.strip().lower() in {
-                    "1",
-                    "true",
-                    "yes",
-                    "on",
-                }:
+                if isinstance(v, str) and v.strip().lower() in {"1", "true", "yes", "on"}:
                     out.append(
                         Finding(
                             severity=Severity.MEDIUM,
@@ -63,9 +58,7 @@ class DebugTracingRule(WorkflowRule):
                 if not isinstance(run, str):
                     continue
 
-                if re.search(r"(?m)^\s*set\s+-x\b", run) or re.search(
-                    r"\b(bash|sh)\s+-x\b", run
-                ):
+                if re.search(r"(?m)^\s*set\s+-x\b", run) or re.search(r"\b(bash|sh)\s+-x\b", run):
                     step_name = get_step_name(step, idx)
                     out.append(
                         Finding(

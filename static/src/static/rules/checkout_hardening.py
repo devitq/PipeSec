@@ -33,8 +33,7 @@ class CheckoutCredentialPersistenceRule(WorkflowRule):
 
                 pc = with_cfg.get("persist-credentials")
                 if pc is None or (
-                    isinstance(pc, str)
-                    and pc.strip().lower() in {"true", "1", "yes", "on"}
+                    isinstance(pc, str) and pc.strip().lower() in {"true", "1", "yes", "on"}
                 ):
                     out.append(
                         Finding(
