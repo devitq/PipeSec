@@ -19,7 +19,7 @@ test:
 	$(GOTEST) ./...
 
 build-dynamic:
-	$(GOBUILD) -o ./$(BINARY_DIR)/$(DYNAMIC_BINARY_NAME) ./cmd/dynamic
+	$(GOBUILD) -o ./$(BINARY_DIR)/$(DYNAMIC_BINARY_NAME) ./cmd/pipesec-dynamic
 	chmod +x ./$(BINARY_DIR)/$(DYNAMIC_BINARY_NAME)
 
 build: build-dynamic
